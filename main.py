@@ -1,9 +1,12 @@
+import asyncio
+
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 import crud
 import schemas
 from db.engine import SessionLocal
+from weather_fetcher import parser
 
 app = FastAPI()
 
@@ -59,3 +62,9 @@ def create_city(city: schemas.CityCreate, db: Session = Depends(get_db)):
 @app.get("/temperatures/", response_model=list[schemas.Temperature])
 def get_all_temperatures(db: Session = Depends(get_db), city_id: int = None):
     return crud.get_all_temperatures(db=db, city_id=city_id)
+
+
+@app.post("/temperatures/update/")
+def update_all_temperatures(db: Session = Depends(get_db)):
+    asyncio.run(parser.main(db=db))
+    return {"message": "Done"}
