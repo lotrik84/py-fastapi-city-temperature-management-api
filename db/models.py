@@ -16,7 +16,7 @@ class DBCity(Base):
 class DBTemperature(Base):
     __tablename__ = "temperature"
     id = Column(Integer, primary_key=True, index=True)
-    city_id = Column(Integer, ForeignKey("city.id"), nullable=False)
+    city_id = Column(Integer, ForeignKey("city.id"), onupdate="CASCADE", nullable=False)
     city = relationship(DBCity)
     date_time = Column(DateTime, default=datetime.datetime.now)
     temperature = Column(Float, nullable=False)
