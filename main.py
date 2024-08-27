@@ -54,3 +54,8 @@ def delete_city(city_id: int, db: Session = Depends(get_db)):
 @app.post("/cities/", response_model=schemas.City)
 def create_city(city: schemas.CityCreate, db: Session = Depends(get_db)):
     return crud.create_city(db=db, city=city)
+
+
+@app.get("/temperatures/", response_model=list[schemas.Temperature])
+def get_all_temperatures(db: Session = Depends(get_db), city_id: int = None):
+    return crud.get_all_temperatures(db=db, city_id=city_id)
