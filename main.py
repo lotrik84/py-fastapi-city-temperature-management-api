@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 import crud
 import schemas
 from db.engine import SessionLocal
-from weather_fetcher import parser
+from weather_fetcher import fetcher
 
 app = FastAPI()
 
@@ -65,6 +65,6 @@ def get_all_temperatures(db: Session = Depends(get_db), city_id: int = None):
 
 
 @app.post("/temperatures/update/")
-def update_all_temperatures(db: Session = Depends(get_db)):
-    asyncio.run(parser.main(db=db))
+async def update_all_temperatures(db: Session = Depends(get_db)):
+    await fetcher.main(db=db)
     return {"message": "Done"}
