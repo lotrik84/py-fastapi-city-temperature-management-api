@@ -18,14 +18,19 @@ def get_single_city(city_id: int, db: Session = Depends(get_db)):
     db_city = crud.get_city_by_id(city_id=city_id, db=db)
 
     if db_city is None:
-        raise HTTPException(status_code=404, detail="City not found")
+        raise HTTPException(status_code=404, detail=f"City with id {city_id} not found")
 
     return db_city
 
 
 @router.put("/cities/{city_id}/", response_model=schemas.City)
 def update_city(city_id: int, city: schemas.CityCreate, db: Session = Depends(get_db)):
-    return crud.update_city(city_id=city_id, city=city, db=db)
+    db_city = crud.update_city(city_id=city_id, city=city, db=db)
+
+    if db_city is None:
+        raise HTTPException(status_code=404, detail=f"City with id {city_id} not found")
+
+    return db_city
 
 
 @router.delete("/cities/{city_id}/")

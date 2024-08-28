@@ -8,16 +8,15 @@ def get_all_cities(db: Session):
 
 
 def get_city_by_id(db: Session, city_id: int = None):
-    queryset = db.query(models.DBCity)
-
-    if city_id is not None:
-        queryset = queryset.filter(models.DBCity.id == city_id)
-
-    return queryset.first()
+    return db.query(models.DBCity).filter(models.DBCity.id == city_id).first()
 
 
 def update_city(db: Session, city: schemas.CityCreate, city_id: int = None):
     db_city = db.query(models.DBCity).filter(models.DBCity.id == city_id).first()
+
+    if db_city is None:
+        return None
+
     db_city.name = city.name
     db_city.additional_info = city.additional_info
     db.commit()
