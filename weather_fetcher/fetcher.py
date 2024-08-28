@@ -27,12 +27,12 @@ def save_temperature(db, city_id, temperature):
 async def get_location(city: str, client: AsyncClient):
     parameters = {"q": city, "appid": WEATHER_API_KEY, "units": "metric", "lang": "ua"}
     response = await client.get(f"{API_GEO_URL}/direct", params=parameters)
-    if response.status_code == 200:
+    if response.status_code == 200 and len(response.json()) > 0:
         lat = response.json()[0]["lat"]
         lon = response.json()[0]["lon"]
         return await get_weather(lat, lon, client)
     else:
-        return False
+        raise Exception(f"Failed to get location for {city}")
 
 
 async def get_weather(lat, lon, client: AsyncClient):
@@ -46,17 +46,21 @@ async def get_weather(lat, lon, client: AsyncClient):
 
     response = await client.get(f"{API_WEATHER_URL}/weather", params=parameters)
 
-    if response.status_code == 200:
+    if response.status_code == 200 and len(response.json()) > 0:
         return response.json()["main"]["temp"]
     else:
-        return False
+        raise Exception(f"Failed to get weather for {lat}, {lon}")
 
 
 async def main(db):
+    temp = {}
     async with AsyncClient() as client:
-        temp = {
-            city.id: await get_location(city.name, client) for city in get_cities(db)
-        }
+        for city in get_cities(db):
+            try:
+                temp[city.id] = await get_location(city.name, client)
+
+            except Exception as e:
+                print(e)
 
         for temperature in temp.items():
             save_temperature(db, city_id=temperature[0], temperature=temperature[1])
