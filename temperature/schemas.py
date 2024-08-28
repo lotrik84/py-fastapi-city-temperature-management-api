@@ -1,22 +1,7 @@
 import datetime
 
 from pydantic import BaseModel
-
-
-class CityBase(BaseModel):
-    name: str
-    additional_info: str | None = None
-
-
-class CityCreate(CityBase):
-    pass
-
-
-class City(CityBase):
-    id: int
-
-    class Config:
-        orm_mode = True
+from city import schemas as city_schema
 
 
 class TemperatureBase(BaseModel):
@@ -30,7 +15,7 @@ class TemperatureCreate(TemperatureBase):
 class Temperature(TemperatureBase):
     id: int
     date_time: datetime.datetime
-    city: City
+    city: city_schema.City
 
     class Config:
         orm_mode = True

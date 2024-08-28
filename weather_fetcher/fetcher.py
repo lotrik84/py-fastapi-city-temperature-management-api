@@ -2,7 +2,8 @@ import os
 from dotenv import load_dotenv
 from httpx import AsyncClient
 
-import crud
+from city import crud as city_crud
+
 from db import models
 
 
@@ -14,7 +15,7 @@ WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 
 
 def get_cities(db):
-    return crud.get_all_cities(db)
+    return city_crud.get_all_cities(db)
 
 
 def save_temperature(db, city_id, temperature):
